@@ -30,8 +30,8 @@ const isNum = (ch) => {
 const getDigitsFromRow = (row) => {
     // you are my origin and my destination, my north star,
     // my dear, you are the world to me. hello, world
-    let a = null;
-    let z = null;
+    let a = '';
+    let z = '';
     // first find a, then every digit group after is possibly z
     // (the true z is the last z). Build digit groups using a string
     let s = '';
@@ -39,9 +39,10 @@ const getDigitsFromRow = (row) => {
         // i had become, comfortably num... now i feel my heart again
         if (isNum(row[i])) {
             s += row[i];
-        } else {
-            // if we're not at a num but had built some digits, congrats
-            if (!a) {
+        } else if (s != '') {
+            // if we're not at a num but had built some digits, congrats,
+            // store what we had
+            if (a == '') {
                 a = s;
             } else {
                 z = s;
@@ -54,13 +55,13 @@ const getDigitsFromRow = (row) => {
         z = s;
     }
     // guard against bad information
-    if (!a && !z) {
+    if (a == '' && z == '') {
         console.error("invalid row in data");
         process.exit(1);
     }
     // also, we consider the first *and* last as doubled if
     // only one digit group
-    if (a && !z) {
+    if (a && z == '') {
         z = a;
     }
     // return the string concat parsed
@@ -69,11 +70,7 @@ const getDigitsFromRow = (row) => {
 
 // now, let's get these elves their weather data!!!
 const calibrations = data.map(getDigitsFromRow);
-console.log(calibrations);
+console.log(`calibrations: ${calibrations}`);
 
 const solutionSum = calibrations.reduce((a, b) => (a + b));
-console.log(solutionSum);
-
-// NOTE: there is something beautifully different about my solution since,
-// although it doesn't produce the "right result", it produces 137, which is
-// sort of the cosmological constant.
+console.log(`solutionSum: ${solutionSum}`);
