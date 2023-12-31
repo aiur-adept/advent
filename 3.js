@@ -82,13 +82,44 @@ const getNumberObjects = (matika, coords) => {
     return ns;
 }
 
+// return true if the predicate evaluates true for any of the
+// neighbours of the given numberObject
+const predicateNeighbours = (matika, predicate, n) => {
+    const { len, y, x } = n;
+    const deltas = [
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        [0, -1],
+        [0, 1],
+        [1, -1],
+        [1, 0],
+        [1, 1]
+    ];
+    for (let ix = 0; ix < len; ix++) {
+        for (delta of deltas) {
+            const [dy, dx] = delta;
+            const y_ = y + dy;
+            const x_ = x + ix + dx;
+            if (x_ >= 0 && x_ < matika[0].length &&
+                y_ >= 0 && y_ < matika.length &&
+                predicate(matika[y_][x_])) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 // given the matika and a number object 'n', determine
 // whether it's a part number (it is neighboured in some direction
 // by a non-'.' char)
 const isPartNumber = (matika, n) => {
-    // TODO
-    // walk along len paces starting at [y][x] and check neighbours.
-    // if at any point we find a non-'.' char, then return true
+    return predicateNeighbours(
+        matika,
+        (char) => /[^\.0-9]/.test(char),
+        n
+    );
 };
 
 
@@ -96,7 +127,6 @@ const main = () => {
     const matika = stringToMatika(data);
     const coords = getNumberCoords(matika);
     const numberObjects = getNumberObjects(matika, coords);
-    console.log(numberObjects);
     let sum = 0;
     for (let n of numberObjects) {
         if (isPartNumber(matika, n)) {
